@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tier-1 IT Helpdesk Knowledge Base & Troubleshooting Playbook</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f6f9;
+        color: #222;
+        margin: 0;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      .container {
+        max-width: 900px;
+        margin: auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      header {
+        border-bottom: 2px solid #0056b3;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+      }
+      h1 {
+        margin: 0;
+        color: #0056b3;
+        font-size: 24px;
+      }
+      .meta {
+        color: #555;
+        font-size: 14px;
+        margin-top: 5px;
+      }
+      .sop-card {
+        border: 1px solid #ddd;
+        border-left: 5px solid #0056b3;
+        border-radius: 5px;
+        padding: 18px;
+        margin-bottom: 20px;
+        background-color: #fafbfc;
+      }
+      .sop-card.security {
+        border-left-color: #c9302c;
+      }
+      h2 {
+        margin-top: 0;
+        font-size: 18px;
+        color: #111;
+      }
+      .badge {
+        display: inline-block;
+        background: #e1ecf4;
+        color: #0056b3;
+        padding: 3px 8px;
+        font-size: 12px;
+        border-radius: 4px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+      .badge.sec {
+        background: #f8d7da;
+        color: #842029;
+      }
+      code {
+        background: #eee;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: Consolas, monospace;
+        font-size: 13px;
+      }
+      ul {
+        padding-left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>IT Helpdesk Knowledge Base & Troubleshooting Playbook</h1>
+        <p class="meta">
+          Author: Ngcaphephe Ngqakayi | Role Focus: Tier-1 Systems & Technical
+          Support
+        </p>
+        <p>A structured Tier-1 IT Support and Cybersecurity Operations manual documenting standard diagnostic workflows, Windows Cli troubleshooting, and escalation protocols.</p>
+      </header>
+
+      <!-- SOP 1 -->
+      <div class="sop-card">
+        <span class="badge">SOP-001 | Networking</span>
+        <h2>No Internet Access / DNS Resolution Failure</h2>
+        <p>
+          <strong>Symptoms:</strong> User is connected to Wi-Fi or Ethernet, but
+          websites fail to load with "DNS_PROBE_FINISHED_NXDOMAIN" or timeout
+          errors.
+        </p>
+        <p><strong>Troubleshooting Steps:</strong></p>
+        <ul>
+          <li>
+            Verify physical cable or Wi-Fi connection status and check if
+            airplane mode is off.
+          </li>
+          <li>
+            Open Command Prompt and run <code>ipconfig /all</code> to verify a
+            valid IPv4 address (not an APIPA <code>169.254.x.x</code> address).
+          </li>
+          <li>
+            Test local gateway reachability using
+            <code>ping 192.168.1.1</code> (or default gateway IP).
+          </li>
+          <li>
+            Test external IP connectivity using <code>ping 8.8.8.8</code>. If IP
+            ping succeeds but domain names fail, clear DNS cache with
+            <code>ipconfig /flushdns</code>.
+          </li>
+          <li>
+            Renew DHCP lease via <code>ipconfig /release</code> followed by
+            <code>ipconfig /renew</code>.
+          </li>
+        </ul>
+        <p>
+          <strong>Escalation Criteria:</strong> Escalate to Tier-2 Network Admin
+          if multiple users on the same switch/VLAN lose connectivity
+          simultaneously.
+        </p>
+      </div>
+
+      <!-- SOP 2 -->
+      <div class="sop-card security">
+        <span class="badge sec">SOP-002 | Cybersecurity Triage</span>
+        <h2>Suspicious Phishing Email Reported by End User</h2>
+        <p>
+          <strong>Symptoms:</strong> Employee reports an unexpected email
+          requesting urgent password resets, invoice payments, or containing
+          unfamiliar attachments.
+        </p>
+        <p><strong>Troubleshooting & Containment Steps:</strong></p>
+        <ul>
+          <li>
+            Instruct the user <strong>not</strong> to click links, download
+            attachments, or reply to the sender.
+          </li>
+          <li>
+            Inspect the sender address carefully for lookalike domains
+            (typosquatting) and hover over links to check actual destination
+            URLs.
+          </li>
+          <li>
+            Review email headers (SPF, DKIM, and DMARC status) to verify sender
+            authenticity.
+          </li>
+          <li>
+            If the user already clicked a link or entered credentials,
+            immediately reset their account password, revoke active sessions,
+            and run a full antivirus/EDR scan on their workstation.
+          </li>
+        </ul>
+        <p>
+          <strong>Escalation Criteria:</strong> Escalate immediately to the
+          Security Operations team with the original <code>.eml</code> file
+          attached so the sender domain can be blocked organization-wide.
+        </p>
+      </div>
+
+      <!-- SOP 3 -->
+      <div class="sop-card">
+        <span class="badge">SOP-003 | Identity & Access</span>
+        <h2>User Account Lockout & Forgotten Password</h2>
+        <p>
+          <strong>Symptoms:</strong> User cannot log into Windows workstation or
+          Microsoft 365 portal due to repeated failed password attempts.
+        </p>
+        <p><strong>Troubleshooting Steps:</strong></p>
+        <ul>
+          <li>
+            Verify user identity following company verification policy (employee
+            ID, manager confirmation, or security challenge).
+          </li>
+          <li>
+            Check Active Directory / Entra ID for account lockout status and
+            inspect recent sign-in logs for unusual IP locations.
+          </li>
+          <li>
+            Unlock the account and issue a temporary password with "User must
+            change password at next logon" enabled.
+          </li>
+          <li>
+            Check if cached credentials on a mobile device or mapped network
+            drive are repeatedly triggering lockouts.
+          </li>
+        </ul>
+        <p>
+          <strong>Escalation Criteria:</strong> Escalate to Security if sign-in
+          logs show brute-force login attempts from unfamiliar foreign IP
+          addresses.
+        </p>
+      </div>
+
+      <!-- SOP 4 -->
+      <div class="sop-card">
+        <span class="badge">SOP-004 | OS Performance</span>
+        <h2>Slow Workstation Performance / High CPU or RAM Usage</h2>
+        <p>
+          <strong>Symptoms:</strong> Windows workstation freezes, applications
+          lag, or fan noise runs continuously.
+        </p>
+        <p><strong>Troubleshooting Steps:</strong></p>
+        <ul>
+          <li>
+            Open Task Manager (<code>Ctrl + Shift + Esc</code>) and inspect CPU,
+            Memory, and Disk utilization under the Processes tab.
+          </li>
+          <li>
+            Identify runaway background tasks or memory-heavy browser tabs and
+            end unresponsive processes safely.
+          </li>
+          <li>
+            Check Startup apps tab and disable non-essential programs launching
+            at boot.
+          </li>
+          <li>
+            Run <code>sfc /scannow</code> in an elevated Command Prompt if
+            Windows system file corruption is suspected, then perform a clean
+            reboot.
+          </li>
+        </ul>
+        <p>
+          <strong>Escalation Criteria:</strong> Escalate to Hardware Support if
+          SMART diagnostics indicate failing storage drives or insufficient
+          physical RAM for required role software.
+        </p>
+      </div>
+
+      <!-- SOP 5 -->
+      <div class="sop-card">
+        <span class="badge">SOP-005 | Peripherals</span>
+        <h2>Network Printer Offline or Stuck Print Queue</h2>
+        <p>
+          <strong>Symptoms:</strong> Print jobs remain stuck in queue or printer
+          displays "Offline" status on user's PC.
+        </p>
+        <p><strong>Troubleshooting Steps:</strong></p>
+        <ul>
+          <li>
+            Confirm the printer is powered on, has paper/toner, and displays no
+            hardware error codes on its LCD screen.
+          </li>
+          <li>
+            Ping the printer's static IP address from Command Prompt (<code
+              >ping [Printer_IP]</code
+            >) to verify network reachability.
+          </li>
+          <li>
+            Open <code>services.msc</code>, locate the
+            <strong>Print Spooler</strong> service, and click Restart to clear
+            stuck print jobs.
+          </li>
+          <li>Send a test page to confirm resolution.</li>
+        </ul>
+        <p>
+          <strong>Escalation Criteria:</strong> Escalate to Vendor Support if
+          hardware jams persist or internal rollers/fusers require physical
+          replacement.
+        </p>
+      </div>
+
+      <!-- SOP 6 -->
+      <div class="sop-card">
+        <span class="badge">SOP-006 | Escalation</span>
+        <h2>Premature Escalation (Hot-Potatoing)</h2>
+        <p>
+          <strong>Symptoms:</strong>Tickets arrive in Tier 2 with one-line
+          summaries like "User caannot connect" or "App crashing, please fix.",
+          showing no record of what was checked. Other symptoms include: Skipped
+          Basic Diagnostics, Ultra-Fast Transfer Times and Missing User
+          Environment Details.
+        </p>
+        <p><strong>Troubleshooting Steps:</strong></p>
+        <ul>
+          <li>
+            Pull recent escalated tickets and review them side-by-side with the
+            agent. Inquire on "where they got stuck?"
+          </li>
+          <li>
+            Require the agent to fill out a short form in the internal notes
+            before transferring a ticket. Include fields for User's Device/OS,
+            Error Message, KB Article Checked, and 3 Troubleshooting Steps
+            Attempted.
+          </li>
+          <li>
+            Reguire the agent to message a Team Lead or senior peer in
+            SLacks/Teams for a quick thumbs-up or approval check.
+          </li>
+          <li>
+            Give Tier 2 Bounce Back authority for that specific agent's
+            escalations.
+          </li>
+        </ul>
+        <p>
+          <strong>Trigger Criteria:</strong>High Bounce-Back rates, Template
+          Bypass, Unapproved Transfers.
+        </p>
+        <p>
+          <strong>Escalation Criteria:</strong>Remove thier permission to
+          escalte tickets directly in your ticketing software. Route all their
+          transfers to a "lead Review" queue first, or resrict incoming tickets
+          to basic Tier 1 tasks until they prove they can follow the SOP.
+        </p>
+      </div>
+      
+      <!-- SOP 7 -->
+      <div class="sop-card security">
+        <span class="badge sec">SOP-007 | Cybersecurity and Networking</span>
+        <h2>Suspicious Network Connections and Open Ports Check</h2>
+        <p>
+          <strong>Symptoms:</strong> Workstation shows unusually slow bandwidth, unexpected outbound traffic, and/or security alerts flagging unfamiliar background connections.
+        </p>
+        <p><strong>Troubleshooting & Containment Steps:</strong></p>
+        <ul>
+          <li>
+            Open Command Prompt as Administrator and run <code>netstat -ano</code> to lost all active TCP/UDP connections, listening ports, and ther Process IDs (PIDs).
+          </li>
+          <li>
+            Review the <strong>Foreign Address</strong> and <strong>State</strong> ( ESTABLISHED or LISTENING) columns to spot unfamiliar external IP addresses or unusual ports.
+          </li>
+          <li>
+            Find the exact program behind a suspicious PID by running <code>tasklist | findstr [PID]</code> in Command Prompt or checking the <strong>Details</strong> tab in Task Manager (Ctrl + Shift + Esc)
+          </li>
+          <li>
+           Run a quick Windows Defender scan and check the Windows Defender Firewall rules to verify no unauthorized apps were allowed through.
+          </li>
+        </ul>
+        <p>
+          <strong>Escalation Criteria:</strong> Escalate immediately to Tier-2 Security Operations if an unrecognized process maintains an active connection to an external IP on non-standard ports, or if a known sytem process behaves abnormally.
+        </p>
+      </div>
+
+    </div>
+  </body>
+</html>
